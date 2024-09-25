@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}管理者の編集{% endblock %}
+
+{% block content %}
+    <script src="{{ url_for('static', filename='js/search.js') }}" defer></script>
+    <h1>管理者一覧</h1>
+
+    <div>
+        <a href="{{ url_for('main.add_admin') }}">
+            <button>管理者の追加</button>
+        </a>
+    </div>
+
+    <input type="text" id="searchBox" placeholder="検索">
+
+    <table id="adminTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>名前</th>
+                <th>メールアドレス</th>
+                <th>権限</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for admin in admins %}
+            <tr>
+                <td>{{ admin.id }}</td>
+                <td>{{ admin.name }}</td>
+                <td>{{ admin.email }}</td>
+                <td>{{ admin.permission }}</td>
+                <td>
+                    <a href="{{ url_for('main.edit_admin', admin_id=admin.id) }}">編集</a>
+                    <a href="{{ url_for('main.delete_admin', admin_id=admin.id) }}">削除</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('main.admin_dashboard') }}">管理者ダッシュボードに戻る</a>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}登録されている避難所{% endblock %}
+
+{% block content %}
+    <script src="{{ url_for('static', filename='js/search.js') }}" defer></script>
+
+    <h1>登録されている避難所</h1>
+
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="flash-message {{ category }}">{{ message }}</div>
+    {% endfor %}
+
+    <div>
+        <a href="{{ url_for('main.add_shelter') }}">
+            <button>避難所の追加</button>
+        </a>
+    </div>
+    <input type="text" id="searchBox" placeholder="避難所名を検索">
+    <table id = 'adminTable'>
+        <thead>
+            <tr>
+                <th>名称</th>
+                <th>住所</th>
+                <th>緯度</th>
+                <th>経度</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for shelter in shelters %}
+            <tr>
+                <td>{{ shelter.name }}</td>
+                <td>{{ shelter.address }}</td>
+                <td>{{ shelter.latitude }}</td>
+                <td>{{ shelter.longitude }}</td>
+                <td>
+                    <a href="{{ url_for('main.edit_shelter', shelter_id=shelter.id) }}">編集</a>
+                    <a href="{{ url_for('main.delete_shelter', shelter_id=shelter.id) }}">削除</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
