@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}茅ヶ崎市避難所備蓄管理システム - マップ{% endblock %}
+
+{% block content %}
+    <script src="{{ url_for('static', filename='js/map.js') }}" defer></script>
+
+    <div id="map"></div>
+    
+    <!-- サイドパネル -->
+    <div id="shelter-panel" class="collapsed">
+        <button id="toggle-button">≪</button>
+        <ul id="shelter-items"></ul>
+    </div>
+
+    <script id="sheltersData" type="application/json">
+        {{ shelters|tojson }}
+    </script>
+
+    <style>
+        #map {
+            width: 100%;
+        }
+
+        /* サイドパネルのスタイル */
+        #shelter-panel {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            right: 0;
+            top: 4vh;
+            background-color: #fff;
+            border-left: 2px solid #ccc;
+            padding: 10px;
+            overflow-y: scroll;
+            transition: transform 0.3s ease;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* サイドパネルの折りたたみ時のスタイル */
+        #shelter-panel.collapsed {
+            transform: translateX(300px);
+            overflow-y: unset;
+        }
+
+        #shelter-panel.collapsed 
+        #toggle-button{
+            height: 100%;
+        }
+
+        /* 折りたたみボタンのスタイル */
+        #toggle-button {
+            position: absolute;
+            left: 0;
+            padding: 6px;
+            height: 150vh;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            z-index: 1000; 
+        }
+
+    </style>
+{% endblock %}

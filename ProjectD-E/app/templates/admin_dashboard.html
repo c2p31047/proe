@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}管理者ダッシュボード{% endblock %}
+
+{% block content %}
+    <h1>管理者ダッシュボード</h1>
+    <div>
+        <a href="{{ url_for('main.manage_admins') }}">
+            <button>管理者の編集</button>
+        </a>
+    </div>
+    <div>
+        <a href="{{ url_for('main.manage_shelters') }}">
+            <button>避難所編集</button>
+        </a>
+    </div>
+
+{% endblock %}
