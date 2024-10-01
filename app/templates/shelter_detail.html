@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ shelter.name }}の詳細</title>
+</head>
+<body>
+    <h1>{{ shelter.name }}の詳細</h1>
+    <p><strong>住所:</strong> {{ shelter.address }}</p>
+    <p><strong>想定収容人数:</strong> {{ shelter.capacity }}人</p>
+    <p><strong>緯度:</strong> {{ shelter.latitude }}</p>
+    <p><strong>経度:</strong> {{ shelter.longitude }}</p>
+    <p><strong>対応災害:</strong></p>
+    <ul>
+        {% if shelter.hightide is not none and shelter.hightide == 1 %}
+            <li>高潮</li>
+        {% endif %}
+        {% if shelter.earthquake is not none and shelter.earthquake == 1 %}
+            <li>地震</li>
+        {% endif %}
+        {% if shelter.tsunami is not none and shelter.tsunami == 1 %}
+            <li>津波</li>
+        {% endif %}
+        {% if shelter.inland_flooding is not none and shelter.inland_flooding == 1 %}
+            <li>内水氾濫</li>
+        {% endif %}
+        {% if shelter.volcano is not none and shelter.volcano == 1 %}
+            <li>火山現象</li>
+        {% endif %}
+        {% if shelter.landslide is not none and shelter.landslide == 1 %}
+            <li>崖崩れ</li>
+        {% endif %}
+        {% if shelter.flood is not none and shelter.flood == 1 %}
+            <li>洪水</li>
+        {% endif %}
+        {% if shelter.hightide is none and shelter.earthquake is none and shelter.tsunami is none and shelter.inland_flooding is none and shelter.volcano is none and shelter.landslide is none and shelter.flood is none %}
+            <li>対応災害はありません</li>
+        {% endif %}
+    </ul>
+    <a href="/">戻る</a>
+</body>
+</html>

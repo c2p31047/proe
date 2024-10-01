@@ -11,7 +11,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
     phonenumber = db.Column(db.String(20))
-    
+
     def is_admin(self):
         return Admin.query.filter_by(email=self.email).first() is not None
 
@@ -26,6 +26,7 @@ class Shelter(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(255), nullable=False)
     address = db.Column(db.String(255), nullable=False)
+    capacity = db.Column(db.Integer, server_default='')
     flood = db.Column(db.Integer)
     landslide = db.Column(db.Integer)
     hightide = db.Column(db.Integer)
@@ -36,7 +37,7 @@ class Shelter(db.Model):
     volcano = db.Column(db.Integer)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
-    altitude = db.Column(db.Float, nullable=False)
+    altitude = db.Column(db.Float)
 
     def __repr__(self):
         return f"<Shelter {self.name}>"
@@ -48,4 +49,5 @@ class Shelter(db.Model):
             'address': self.address,
             'latitude': self.latitude,
             'longitude': self.longitude,
+            'capacity': self.capacity,
         }

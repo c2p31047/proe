@@ -3,11 +3,11 @@
 {% block title %}管理者の編集{% endblock %}
 
 {% block content %}
-    <script src="{{ url_for('static', filename='js/search.js') }}" defer></script>
+    <script src="../static/js/search.js" defer></script>
     <h1>管理者一覧</h1>
 
     <div>
-        <a href="{{ url_for('main.add_admin') }}">
+        <a href="/admin/add_admin">
             <button>管理者の追加</button>
         </a>
     </div>

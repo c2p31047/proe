@@ -1,4 +1,5 @@
 import pandas as pd
+import chardet
 import os
 from flask import Blueprint, render_template, redirect, url_for, request, flash, abort, current_app
 from flask_login import login_user, login_required, logout_user, current_user
@@ -13,7 +14,7 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
-    shelters = db.session.query(Shelter).all()
+    shelters = Shelter.query.all() 
     shelters_dict = [shelter.to_dict() for shelter in shelters]
     return render_template('index.html', shelters=shelters_dict)
 
@@ -61,6 +62,8 @@ def logout():
 def settings():
     return render_template('settings.html')
 
+import re
+
 @main.route('/admin/upload_shelter', methods=['GET', 'POST'])
 def upload_shelter():
     if request.method == 'POST':
@@ -72,23 +75,48 @@ def upload_shelter():
             flash('ファイル名がありません。')
             return redirect(request.url)
         if file:
-            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], file.filename)
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], secure_filename(file.filename))
             file.save(filepath)
 
-            # CSVを読み込む
             try:
-                df = pd.read_csv(filepath)
+                # エンコード自動検出
+                with open(filepath, 'rb') as f:
+                    raw = f.read()
+                    result = chardet.detect(raw)
+                    encoding = result['encoding']
+
+                df = pd.read_csv(filepath, encoding=encoding)
+                df.columns = df.columns.str.replace('\n', '')
 
                 # データベースに書き込む
                 for _, row in df.iterrows():
-                    existing_shelter = Shelter.query.filter_by(name=row['name']).first()
+                    # すでに登録されている避難所を除外
+                    existing_shelter = Shelter.query.filter_by(name=row['名称']).first()
                     if existing_shelter is None:
+                        # 収容人数を整数に変換
+                        capacity_str = row['想定収容人数']
+                        capacity = None
+                        if isinstance(capacity_str, str):
+                            # 人数の部分のみ抽出
+                            match = re.search(r'(\d{1,3}(?:,\d{3})*)', capacity_str)
+                            if match:
+                                # カンマを削除して整数に変換
+                                digits = match.group(0).replace(',', '')
+                                capacity = int(digits)
+
                         shelter = Shelter(
-                            name=row['name'],
-                            address=row['address'],
-                            latitude=row['latitude'],
-                            longitude=row['longitude'],
-                            altitude=row['altitude']
+                            name=row['名称'],
+                            address=row['住所'],
+                            latitude=row['緯度'],
+                            longitude=row['経度'],
+                            capacity=capacity,
+                            hightide=row.get('災害種別_高潮', False),
+                            earthquake=row.get('災害種別_地震', False),
+                            tsunami=row.get('災害種別_津波', False),
+                            inland_flooding=row.get('災害種別_内水氾濫', False),
+                            volcano=row.get('災害種別_火山現象', False),
+                            landslide=row.get('災害種別_崖崩れ、土石流及び地滑り', False),
+                            flood=row.get('災害種別_洪水', False)
                         )
                         db.session.add(shelter)
 
@@ -97,9 +125,14 @@ def upload_shelter():
             except Exception as e:
                 db.session.rollback()
                 flash(f'エラーが発生しました: {str(e)}')
+            finally:
+                if os.path.exists(filepath):
+                    os.remove(filepath)
             return redirect(url_for('main.manage_shelters'))
 
-    return render_template('upload_shelter.html')  # アップロード用のテンプレート
+    return render_template('upload_shelter.html')
+
+
 
 
 def admin_required(f):
@@ -126,7 +159,7 @@ def add_admin():
         name = request.form['name']
         email = request.form['email']
         password = request.form['password']
-        
+
         new_admin = Admin(name=name, email=email, password=password)
         db.session.add(new_admin)
         db.session.commit()
@@ -222,12 +255,12 @@ def delete_admin(admin_id):
 def promote_user_by_email():
     email = request.form['email']
     user = User.query.filter_by(email=email).first()
-    
+
     existing_admin = Admin.query.filter_by(email=email).first()
     if existing_admin:
         flash('このメールアドレスは既に登録されています。', 'error')
         return redirect(url_for('main.add_admin'))
-    
+
     if user:
         new_admin = Admin(email=user.email, name=user.name, password=user.password)
         db.session.add(new_admin)
@@ -236,3 +269,9 @@ def promote_user_by_email():
     else:
         flash('ユーザーが見つかりません.')
     return redirect(url_for('main.add_admin'))
+
+@main.route('/shelter/<int:shelter_id>')
+def shelter_detail(shelter_id):
+    shelter = Shelter.query.get_or_404(shelter_id)  # IDに基づいて避難所を取得
+    return render_template('shelter_detail.html', shelter=shelter)
+

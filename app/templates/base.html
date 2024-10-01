@@ -3,43 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}My Flask App{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+    <title>{% block title %}茅ヶ崎市避難所備蓄管理システム{% endblock %}</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <script src="../static/js/script.js" defer></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
     <header>
-        <h1><a href="{{ url_for('main.index') }}">茅ヶ崎市避難所備蓄管理システム</a></h1>
+        <h1><a href="/">茅ヶ崎市避難所備蓄管理システム</a></h1>
         <button class="menu-toggle" aria-label="メニューを開く">
             <span class="menu-icon"></span>
         </button>
         <nav class="nav-menu">
             <ul>
                 {% if current_user.is_authenticated == False %}
-                    <li><a href="{{ url_for('main.index') }}" class="home-link">
+                    <li><a href="/" class="home-link">
                         <span class="home-text">HOME</span><br>
                     </a></li>
                     <hr>
                 {% endif %}
                 {% if current_user.is_authenticated %}
                     {% if current_user.is_admin %}
-                        <li><a href="{{ url_for('main.admin_dashboard') }}" class="home-link">
+                        <li><a href="/admin" class="home-link">
                             <span class="home-text">ADMIN DASHBOARD</span><br>
                         </a></li>
                         <hr>
                     {% endif %}
-                        <li><a href="{{ url_for('main.logout') }}" class="home-link">
+                        <li><a href="/logout" class="home-link">
                             <span class="home-text">LOGOUT</span><br>
                         </a></li>
                 {% else %}
-                    <li><a href="{{ url_for('main.login') }}" class="home-link">
+                    <li><a href="/login" class="home-link">
                         <span class="home-text">LOGIN</span><br>
                     </a></li>
                     <hr>
-                    <li><a href="{{ url_for('main.register') }}" class="home-link">
+                    <li><a href="/register" class="home-link">
                         <span class="home-text">REGISTER</span><br>
                     </a></li>
                 {% endif %}

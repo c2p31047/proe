@@ -5,3 +5,4 @@ Flask-Migrate
 Flask-WTF
 email_validator
 pandas
+chardet

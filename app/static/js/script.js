@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-//郵便番号から住所検索
+//ユーザー登録時の郵便番号から住所検索
 $(document).ready(function() {
     $('#postal_code').on('blur', function() {
         var postalCode = $(this).val();
