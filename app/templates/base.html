@@ -4,15 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}茅ヶ崎市避難所備蓄管理システム{% endblock %}</title>
-    <link rel="stylesheet" href="../static/css/style.css">
-    <script src="../static/js/script.js" defer></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
     <header>
-        <h1><a href="/">茅ヶ崎市避難所備蓄管理システム</a></h1>
         <button class="menu-toggle" aria-label="メニューを開く">
             <span class="menu-icon"></span>
         </button>
@@ -25,12 +22,16 @@
                     <hr>
                 {% endif %}
                 {% if current_user.is_authenticated %}
-                    {% if current_user.is_admin %}
+                    {% if current_user.is_admin() %}
                         <li><a href="/admin" class="home-link">
                             <span class="home-text">ADMIN DASHBOARD</span><br>
                         </a></li>
                         <hr>
                     {% endif %}
+                        <li><a href="/settings" class="home-link">
+                            <span class="home-text">SETTING</span><br>
+                        </a></li>
+                        <hr>
                         <li><a href="/logout" class="home-link">
                             <span class="home-text">LOGOUT</span><br>
                         </a></li>
@@ -45,6 +46,8 @@
                 {% endif %}
             </ul>
         </nav>
+        <h1><a href="/">茅ヶ崎市避難所備蓄管理システム</a></h1>
+
     </header>
 
     <main>

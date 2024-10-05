@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ shelter.name }}の詳細</title>
-</head>
-<body>
-    <h1>{{ shelter.name }}の詳細</h1>
+{% extends "base.html" %}
+
+{% block title %}{{ shelter.name }} の詳細{% endblock %}
+
+{% block content %}
+    <h1>{{ shelter.name }} の詳細</h1>
     <p><strong>住所:</strong> {{ shelter.address }}</p>
     <p><strong>想定収容人数:</strong> {{ shelter.capacity }}人</p>
     <p><strong>緯度:</strong> {{ shelter.latitude }}</p>
@@ -38,6 +35,17 @@
             <li>対応災害はありません</li>
         {% endif %}
     </ul>
+
+    <h2>{{ shelter.name }} の備蓄状況</h2>
+    <ul>
+        {% if stocks %}
+            {% for stock in stocks %}
+                <li>{{ stock.stockname }}: {{ stock.quantity }}個</li>
+            {% endfor %}
+        {% else %}
+            <li>備蓄はありません</li>
+        {% endif %}
+    </ul>
+
     <a href="/">戻る</a>
-</body>
-</html>
+{% endblock %}

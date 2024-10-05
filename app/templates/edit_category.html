@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}カテゴリの編集{% endblock %}
+
+{% block content %}
+    <h2>カテゴリの編集</h2>
+
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="flash-message {{ category }}">{{ message }}</div>
+    {% endfor %}
+
+    <form method="post" action="{{ url_for('admin.edit_category', id=category.id) }}">
+        <div class="form-group">
+            <label for="category">カテゴリ名<span style="color:red;">*</span></label>
+            <input type="text" id="category" name="category" value="{{ category.category }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="other">その他の情報</label>
+            <textarea id="other" name="other">{{ category.other }}</textarea>
+        </div>
+
+        <button type="submit">更新</button>
+        <a href="{{ url_for('admin.list_category') }}">キャンセル</a>
+    </form>
+{% endblock %}

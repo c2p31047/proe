@@ -4,6 +4,10 @@
 
 {% block content %}
     <script src="{{ url_for('static', filename='js/map.js') }}" defer></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <link rel="stylesheet" href="../static/css/Control.OSMGeocoder.css">
+    <script src="../static/js/Control.OSMGeocoder.js"></script>
 
     <!--<div>
         <input type="text" id="searchBox" placeholder="避難所を検索...">

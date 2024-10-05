@@ -10,12 +10,12 @@
         {% endfor %}
 
         <div>
-            <a href="{{ url_for('main.upload_shelter') }}">
+            <a href="{{ url_for('shelter.upload_shelter') }}">
                 <button>csvから避難所を追加する</button>
             </a>
         </div>
 
-        <form method="POST" action="{{ url_for('main.add_shelter') }}">
+        <form method="POST" action="{{ url_for('shelter.add_shelter') }}">
             <label for="name">名称:</label>
             <input type="text" id="name" name="name" required>
             <br>
@@ -39,5 +39,5 @@
             <button type="submit">追加</button>
         </form>
         <br>
-        <a href="{{ url_for('main.manage_shelters') }}">管理者一覧に戻る</a>
+        <a href="{{ url_for('shelter.manage_shelters') }}">管理者一覧に戻る</a>
 {% endblock %}

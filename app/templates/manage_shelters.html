@@ -12,7 +12,7 @@
     {% endfor %}
 
     <div>
-        <a href="{{ url_for('main.add_shelter') }}">
+        <a href="{{ url_for('shelter.add_shelter') }}">
             <button>避難所の追加</button>
         </a>
     </div>
@@ -20,6 +20,7 @@
     <table id = 'adminTable'>
         <thead>
             <tr>
+                <th>No.</th>
                 <th>名称</th>
                 <th>住所</th>
                 <th>緯度</th>
@@ -30,13 +31,14 @@
         <tbody>
             {% for shelter in shelters %}
             <tr>
+                <td>{{ shelter.id }}</td>
                 <td>{{ shelter.name }}</td>
                 <td>{{ shelter.address }}</td>
                 <td>{{ shelter.latitude }}</td>
                 <td>{{ shelter.longitude }}</td>
                 <td>
-                    <a href="{{ url_for('main.edit_shelter', shelter_id=shelter.id) }}">編集</a>
-                    <a href="{{ url_for('main.delete_shelter', shelter_id=shelter.id) }}">削除</a>
+                    <a href="{{ url_for('shelter.edit_shelter', shelter_id=shelter.id) }}">編集</a>
+                    <a href="{{ url_for('shelter.delete_shelter', shelter_id=shelter.id) }}">削除</a>
                 </td>
             </tr>
             {% endfor %}

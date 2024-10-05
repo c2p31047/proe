@@ -3,6 +3,7 @@
 {% block title %}避難所編集{% endblock %}
 
 {% block content %}
+
     <h1>避難所編集</h1>
     <form method="POST">
         <div class="form-group">
@@ -11,21 +12,22 @@
         </div>
         <div class="form-group">
             <label for="name">住所</label>
-            <input type="text" name="name" class="form-control" value="{{ shelter.address }}" required>
+            <input type="text" name="address" class="form-control" value="{{ shelter.address }}" required>
         </div>
         <div class="form-group">
             <label for="name">緯度</label>
-            <input type="text" name="name" class="form-control" value="{{ shelter.latitude }}" required>
+            <input type="text" name="latitude" class="form-control" value="{{ shelter.latitude }}" required>
         </div>
         <div class="form-group">
             <label for="name">経度</label>
-            <input type="text" name="name" class="form-control" value="{{ shelter.longitude }}" required>
+            <input type="text" name="longitude" class="form-control" value="{{ shelter.longitude }}" required>
         </div>
-        <div class="form-group">
+        <!-- <div class="form-group">
             <label for="name">高度</label>
-            <input type="text" name="name" class="form-control" value="{{ shelter.altitude }}" required>
-        </div>
+            <input type="text" name="altitude" class="form-control" value="{{ shelter.altitude }}" required>
+        </div> -->
         <!-- 他のフォームフィールドも追加 -->
         <button type="submit" class="btn btn-primary">更新</button>
     </form>
+
 {% endblock %}

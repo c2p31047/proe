@@ -19,8 +19,14 @@ def create_app():
     login_manager.login_view = 'main.login'
     migrate.init_app(app, db)
 
-    from .routes import main
+    from .main import main
     app.register_blueprint(main)
+
+    from .admin import admin_bp
+    app.register_blueprint(admin_bp)
+
+    from .shelter import shelter_bp
+    app.register_blueprint(shelter_bp)
 
     @login_manager.user_loader
     def load_user(user_id):

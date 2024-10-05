@@ -4,15 +4,27 @@
 
 {% block content %}
     <h1>管理者ダッシュボード</h1>
-    <div>
-        <a href="{{ url_for('main.manage_admins') }}">
-            <button>管理者の編集</button>
-        </a>
-    </div>
-    <div>
-        <a href="{{ url_for('main.manage_shelters') }}">
-            <button>避難所編集</button>
-        </a>
+    <div class="dashboard">
+        <div class="dashboard-button">
+            <a href="{{ url_for('admin.manage_admins') }}">
+                <button>管理者の編集</button>
+            </a>
+        </div>
+        <div class="dashboard-button">
+            <a href="{{ url_for('shelter.manage_shelters') }}">
+                <button>避難所編集</button>
+            </a>
+        </div>
+        <div class="dashboard-button">
+            <a href="{{ url_for('admin.stock_list') }}">
+                <button>備蓄状況の管理</button>
+            </a>
+        </div>
+        <div class="dashboard-button">
+            <a href="{{ url_for('admin.list_category') }}">
+                <button>備蓄カテゴリーの管理</button>
+            </a>
+        </div>
     </div>
 
 {% endblock %}

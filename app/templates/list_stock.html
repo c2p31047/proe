@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block title %}備蓄の一覧{% endblock %}
+
+{% block content %}
+        <h1>備蓄の一覧</h1>
+
+        <!-- 避難所選択フォーム -->
+        <form method="GET" action="{{ url_for('admin.stock_list') }}">
+            <label for="shelter">避難所を選択:</label>
+            <select name="shelter" id="shelter">
+                {% for shelter in shelters %}
+                    <option value="{{ shelter.name }}">{{ shelter.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary">表示</button>
+        </form>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert alert-success">
+                    {{ messages[0] }}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- 在庫一覧のテーブル -->
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>避難所名</th>
+                    <th>カテゴリー</th>
+                    <th>在庫名</th>
+                    <th>数量</th>
+                    <th>単位</th>
+                    <th>場所</th>
+                    <th>賞味期限</th>
+                    <th>状態</th>
+                    <th>アクション</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stock in stocks %}
+                    {% if stock.shelter.name == request.args.get('shelter') %}
+                        <tr>
+                            <td>{{ stock.id }}</td>
+                            <td>{{ stock.shelter.name }}</td>
+                            <td>{{ stock.category.name }}</td>
+                            <td>{{ stock.stockname }}</td>
+                            <td>{{ stock.quantity }}</td>
+                            <td>{{ stock.unit }}</td>
+                            <td>{{ stock.location }}</td>
+                            <td>{{ stock.expiration }}</td>
+                            <td>{{ stock.condition }}</td>
+                            <td>
+                                <a href="{{ url_for('admin.edit_stock', id=stock.id) }}" class="btn btn-sm btn-warning">編集</a>
+                                <a href="{{ url_for('admin.delete_stock', id=stock.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('本当に削除しますか？');">削除</a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- 新しい在庫を追加するボタン -->
+        <a href="{{ url_for('admin.add_stock') }}" class="btn btn-primary">新しい在庫を追加</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}カテゴリの管理{% endblock %}
+
+{% block content %}
+    <h2>カテゴリの一覧</h2>
+
+    <a href="{{ url_for('admin.add_category') }}">新しいカテゴリを追加</a>
+
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="flash-message {{ category }}">{{ message }}</div>
+    {% endfor %}
+
+    <ul>
+        {% for category in categories %}
+            <li>
+                {{ category.category }}
+                <a href="{{ url_for('admin.edit_category', id=category.id) }}" class="btn btn-sm btn-warning">編集</a>
+                <a href="{{ url_for('admin.delete_category', id=category.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('本当に削除しますか？');">削除</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
