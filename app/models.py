@@ -38,6 +38,7 @@ class Shelter(db.Model):
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
     altitude = db.Column(db.Float)
+    other = db.Column(db.String(255))
 
     def __repr__(self):
         return f"<Shelter {self.name}>"
@@ -50,6 +51,7 @@ class Shelter(db.Model):
             'latitude': self.latitude,
             'longitude': self.longitude,
             'capacity': self.capacity,
+            'other': self.other,
         }
 
 class AdminShelter(db.Model):

@@ -18,7 +18,7 @@
             <div class="form-group">
                 <label for="category_id">カテゴリー</label>
                 <select name="category_id" id="category_id" class="form-control">
-                    <option value="">カテゴリーを選択してください</option>  <!-- 空の選択肢 -->
+                    <option value="">カテゴリーを選択してください</option>
                     {% for category in categories %}
                         <option value="{{ category.id }}">{{ category.name }}</option>
                     {% endfor %}

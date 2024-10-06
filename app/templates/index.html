@@ -3,11 +3,11 @@
 {% block title %}茅ヶ崎市避難所備蓄管理システム - マップ{% endblock %}
 
 {% block content %}
-    <script src="{{ url_for('static', filename='js/map.js') }}" defer></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
     <link rel="stylesheet" href="../static/css/Control.OSMGeocoder.css">
     <script src="../static/js/Control.OSMGeocoder.js"></script>
+    <script src="{{ url_for('static', filename='js/map.js') }}" defer></script>
 
     <!--<div>
         <input type="text" id="searchBox" placeholder="避難所を検索...">
@@ -23,6 +23,9 @@
     <style>
         #map {
             width: 100%;
+        }
+        .leaflet-control-layers {
+            margin-top: 10px; /* レイヤーコントロールの上部マージンを設定 */
         }
     </style>
 {% endblock %}

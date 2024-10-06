@@ -6,42 +6,37 @@ document.addEventListener('DOMContentLoaded', function() {
     }).addTo(map);
 
     const sheltersData = JSON.parse(document.getElementById('sheltersData').textContent);
+    const markersWithOther = [];
+    const markersWithoutOther = [];
 
     sheltersData.forEach(shelter => {
-        L.marker([shelter.latitude, shelter.longitude])
-            .addTo(map)
+        const markerColor = shelter.other ? 'white' : 'blue';
+        const capacityText = shelter.capacity ? `想定収容人数: ${shelter.capacity}人<br>` : '想定収容人数: 不明<br>';
+
+        // カスタムアイコンの作成
+        const icon = L.divIcon({
+            className: 'custom-icon',
+            html: `<div style="background-color: ${markerColor}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid black; padding: 5px; box-sizing: border-box;"></div>`,
+            iconSize: [20, 20]
+        });
+
+        const marker = L.marker([shelter.latitude, shelter.longitude], { icon: icon })
             .bindPopup(`
                 <strong>${shelter.name}</strong><br>
-                想定収容人数: ${shelter.capacity || '不明'}人<br>
+                ${capacityText}
                 住所: ${shelter.address}<br>
                 <a href="/shelter/${shelter.id}">詳細を見る</a>
             `);
+
+        if (shelter.other) {
+            markersWithOther.push(marker);
+        } else {
+            markersWithoutOther.push(marker);
+        }
     });
 
-    function searchDatabase(query) {
-        // sheltersDataから一致するものを検索
-        return sheltersData.filter(shelter => shelter.name.includes(query) || shelter.address.includes(query));
-    }
-
-    function performSearch(query) {
-        const results = searchDatabase(query);
-        if (results.length > 0) {
-            // データベースから一致するものを表示
-            results.forEach(shelter => {
-                // マーカーの位置を表示
-                map.setView([shelter.latitude, shelter.longitude], 14);
-            });
-        } else {
-            // 一致するものがない場合、GEOSearchで検索
-            if (typeof query === 'string' && query.trim() !== '') {
-                osmGeocoder.geocode(query);
-            } else {
-                console.error('Invalid query for geocoding');
-            }
-        }
-    }
-
-    var osmGeocoder = new L.Control.OSMGeocoder({
+    // 検索機能
+    const osmGeocoder = new L.Control.OSMGeocoder({
         placeholder: '場所を検索する',
         text: '検索',
         bounds: L.latLngBounds(
@@ -52,19 +47,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     map.addControl(osmGeocoder);
 
+    // レイヤーのコントロールを作成
+    const layerControl = L.control.layers({}, {
+        '緊急指定避難所': L.layerGroup(markersWithoutOther).addTo(map),
+        '広域避難場所': L.layerGroup(markersWithOther).addTo(map),
+    }).addTo(map);
+
     // 検索ボタンのクリックイベントを追加
     document.getElementById('searchButton').addEventListener('click', function() {
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
             const query = searchInput.value;
-            performSearch(query);
+            osmGeocoder._geocode(query); // geocodeメソッドの代わりに直接_geocodeを使用
         } else {
             console.error('Search input element not found');
         }
     });
-
-    /*osmGeocoder.on('click', function(e) {
-        const query = e.target.value;
-        performSearch(query);
-    });*/
 });

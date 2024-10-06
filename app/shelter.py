@@ -29,67 +29,85 @@ def upload_shelter():
         if 'file' not in request.files:
             flash('ファイルがありません。')
             return redirect(request.url)
+        
         file = request.files['file']
         if file.filename == '':
             flash('ファイル名がありません。')
             return redirect(request.url)
+        
         if file:
             filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], secure_filename(file.filename))
             file.save(filepath)
 
             try:
-                # エンコード自動検出
+                # ファイルのエンコーディングを検出
                 with open(filepath, 'rb') as f:
                     raw = f.read()
                     result = chardet.detect(raw)
                     encoding = result['encoding']
 
-                df = pd.read_csv(filepath, encoding=encoding)
-                df.columns = df.columns.str.replace('\n', '')
+                # エンコーディングが検出できない場合やUTF-8での読み込みが失敗した場合はShift-JISを試す
+                try:
+                    df = pd.read_csv(filepath, encoding=encoding, low_memory=False)
+                except UnicodeDecodeError:
+                    df = pd.read_csv(filepath, encoding='shift-jis', low_memory=False)
 
-                # データベースに書き込む
+                # 不要な改行や空データを削除
+                df.columns = df.columns.str.replace('\n', '')
+                df.dropna(how='all', inplace=True)  # 空行を削除
+                df.dropna(axis=1, how='all', inplace=True)  # 空列を削除
+
+                # 各行の処理
                 for _, row in df.iterrows():
-                    # すでに登録されている避難所を除外
                     existing_shelter = Shelter.query.filter_by(name=row['名称']).first()
                     if existing_shelter is None:
-                        # 収容人数を整数に変換
-                        capacity_str = row['想定収容人数']
+                        # 収容人数の処理（空白や無効な値の場合にはNoneにする）
                         capacity = None
-                        if isinstance(capacity_str, str):
-                            # 人数の部分のみ抽出
+                        # "想定収容人数" と "収容可能人数（人）" のカラムから値を取得
+                        capacity_str = str(row.get('想定収容人数', '')).strip() or str(row.get('収容可能人数（人）', '')).strip()
+                        
+                        if capacity_str and capacity_str.lower() != 'nan':  # 空でない場合のみ処理
                             match = re.search(r'(\d{1,3}(?:,\d{3})*)', capacity_str)
                             if match:
-                                # カンマを削除して整数に変換
                                 digits = match.group(0).replace(',', '')
                                 capacity = int(digits)
 
+                        # データベースに保存する新しいシェルター情報を作成
                         shelter = Shelter(
-                            name=row['名称'],
+                            name=row.get('名称', False),
                             address=row['住所'],
                             latitude=row['緯度'],
                             longitude=row['経度'],
-                            capacity=capacity,
+                            capacity=capacity,  # capacity が空白なら None が入る
                             hightide=row.get('災害種別_高潮', False),
                             earthquake=row.get('災害種別_地震', False),
                             tsunami=row.get('災害種別_津波', False),
                             inland_flooding=row.get('災害種別_内水氾濫', False),
                             volcano=row.get('災害種別_火山現象', False),
                             landslide=row.get('災害種別_崖崩れ、土石流及び地滑り', False),
-                            flood=row.get('災害種別_洪水', False)
+                            flood=row.get('災害種別_洪水', False),
+                            other=row.get('施設種別呼称', False)
                         )
                         db.session.add(shelter)
 
+                # データベースにコミット
                 db.session.commit()
                 flash('ファイルが正常にアップロードされ、データが保存されました。')
+
             except Exception as e:
+                # エラー時のロールバックとエラーメッセージの表示
                 db.session.rollback()
                 flash(f'エラーが発生しました: {str(e)}')
             finally:
+                # 一時ファイルの削除
                 if os.path.exists(filepath):
                     os.remove(filepath)
             return redirect(url_for('shelter.manage_shelters'))
 
     return render_template('upload_shelter.html')
+
+
+
 
 @shelter_bp.route('/admin/add_shelter', methods=['GET', 'POST'])
 @admin_required
@@ -106,7 +124,7 @@ def add_shelter():
             flash('この避難所は既に存在します。', 'danger')
             return redirect(url_for('shelter.add_shelter'))
 
-        new_shelter = Shelter(name=name, address=address, latitude=latitude, longitude=longitude, altitude=altitude)
+        new_shelter = Shelter(name=name, address=address, latitude=latitude, longitude=longitude) #altitude=altitude)
         db.session.add(new_shelter)
         db.session.commit()
         flash('新しい避難所が追加されました', 'success')

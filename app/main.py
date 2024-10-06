@@ -9,9 +9,49 @@ from .models import User, Shelter
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
+from geopy.geocoders import Nominatim
+from geopy.distance import great_circle, geodesic
 import re
+import logging
+
+
+logging.basicConfig(level=logging.DEBUG)
+
+
+geolocator = Nominatim(user_agent="c2p31047@gmail.com")
 
 main = Blueprint('main', __name__)
+
+def get_coordinates(address):
+    """住所から緯度経度を取得する関数"""
+    geolocator = Nominatim(user_agent="MyAppName (your.email@example.com)")
+    location = geolocator.geocode(address)
+    if location:
+        return (location.latitude, location.longitude)
+    return None
+
+def find_nearest_shelter(user_address, shelters):
+    """与えられた住所から最寄りの避難所を見つける関数"""
+    user_coordinates = get_coordinates(user_address)
+    if user_coordinates is None:
+        logging.debug(f"Invalid address: {user_address}")
+        return None  # 住所が無効な場合
+
+    nearest_shelter = None
+    min_distance = float('inf')
+
+    for shelter in shelters:
+        shelter_coordinates = (shelter.latitude, shelter.longitude)
+        distance = geodesic(user_coordinates, shelter_coordinates).kilometers
+
+        logging.debug(f"Shelter: {shelter.name}, Distance: {distance} km")
+
+        if distance < min_distance:
+            min_distance = distance
+            nearest_shelter = shelter
+
+    logging.debug(f"Nearest Shelter: {nearest_shelter.name if nearest_shelter else 'None'}")
+    return nearest_shelter
 
 @main.route('/')
 def index():
@@ -73,61 +113,40 @@ def logout():
 @login_required
 def settings():
     if request.method == 'POST':
-        current_password = request.form.get('current_password')
-        new_username = request.form.get('username')
-        new_address = request.form.get('address')
-        new_work_address = request.form.get('work_address')
-        new_email = request.form.get('email')
-        new_phonenumber = request.form.get('phonenumber')
-        new_password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password')
+        # 住所が新しく入力された場合
+        new_address = request.form.get('address')  # 自宅の住所
+        new_work_address = request.form.get('work_address')  # 仕事の住所
 
-        # 現在のパスワードが正しいかチェック
-        if not current_password:
-            flash('現在のパスワードを入力してください', 'danger')
-            return redirect(url_for('main.settings'))
-        elif not check_password_hash(current_user.password, current_password):
-            flash('現在のパスワードが正しくありません', 'danger')
-            return redirect(url_for('main.settings'))
+        # 最寄りの避難所を登録
+        if new_address:
+            shelters = Shelter.query.all()  # 全ての避難所を取得
+            nearest_shelter_home = find_nearest_shelter(new_address, shelters)
+            if nearest_shelter_home:
+                current_user.shelter_id = nearest_shelter_home.id
+                logging.debug(f"Home Shelter ID: {current_user.shelter_id}")
+            else:
+                logging.debug("No nearest shelter found for home address.")
 
-        # パスワードの確認（新しいパスワードが一致するか）
-        if new_password and new_password != confirm_password:
-            flash('新しいパスワードが一致しません', 'danger')
-            return redirect(url_for('main.settings'))
-
-        # ユーザー名とメールアドレスのバリデーション
-        if not new_username:
-            flash('ユーザー名を入力してください', 'danger')
-            return redirect(url_for('main.settings'))
-        if not new_email:
-            flash('メールアドレスを入力してください', 'danger')
-            return redirect(url_for('main.settings'))
-
-
-        # メールアドレスが他のユーザーと重複していないか確認
-        existing_user = User.query.filter_by(email=new_email).first()
-        if existing_user and existing_user.id != current_user.id:
-            flash('このメールアドレスは既に他のユーザーに使用されています', 'danger')
-            return redirect(url_for('main.settings'))
-
-        # ユーザー情報の更新
-        current_user.name = new_username
-        current_user.address = new_address
-        current_user.work_address = new_work_address
-        current_user.email = new_email
-        current_user.phonenumber = new_phonenumber
-
-        # 新しいパスワードが設定された場合のみパスワードを変更
-        if new_password:
-            current_user.password = generate_password_hash(new_password)
+        if new_work_address:
+            shelters = Shelter.query.all()  # 全ての避難所を取得
+            nearest_shelter_work = find_nearest_shelter(new_work_address, shelters)
+            if nearest_shelter_work:
+                current_user.work_shelter_id = nearest_shelter_work.id
+                logging.debug(f"Work Shelter ID: {current_user.work_shelter_id}")
+            else:
+                logging.debug("No nearest shelter found for work address.")
 
         # データベースに変更を保存
         db.session.commit()
+
+        # 更新されたユーザー情報を確認
+        updated_user = User.query.get(current_user.id)
+        logging.debug(f"Updated User Shelter ID: {updated_user.shelter_id}")
+
         flash('設定が更新されました', 'success')
         return redirect(url_for('main.index'))
 
     return render_template('settings.html')
-
 
 def admin_required(f):
     @wraps(f)
