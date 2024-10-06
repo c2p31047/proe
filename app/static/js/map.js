@@ -39,10 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const osmGeocoder = new L.Control.OSMGeocoder({
         placeholder: '場所を検索する',
         text: '検索',
-        bounds: L.latLngBounds(
-            [35.3000, 139.3500],
-            [35.3667, 139.4500]
-        )
     });
 
     map.addControl(osmGeocoder);

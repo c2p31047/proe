@@ -31,7 +31,7 @@
         <!-- 電話番号の変更 -->
         <div class="form-group">
             <label for="phonenumber">電話番号</label>
-            <input type="text" id="phonenumber" name="phonenumber" value="{{ current_user.phonenumber }}">
+            <input type="text" id="phonenumber" name="phonenumber" value="{{ current_user.phonenumber }}" oninput="formatPhoneNumber(this)" maxlength="15">
         </div>
 
         <!-- 新しいパスワードの入力 -->
@@ -60,4 +60,36 @@
             color: red;
         }
     </style>
+
+    <script>
+        function formatPhoneNumber(input) {
+            // 数字のみを取得
+            let value = input.value.replace(/[^0-9]/g, '');
+
+            // フォーマットのルールを適用
+            if (value.startsWith('080') || value.startsWith('090') || value.startsWith('070') || value.startsWith('060')) {
+                // 携帯電話番号のフォーマット
+                if (value.length > 3 && value.length <= 7) {
+                    value = value.replace(/(\d{3})(\d+)/, '$1-$2'); // 080-xxxx
+                } else if (value.length > 7) {
+                    value = value.replace(/(\d{3})(\d{4})(\d+)/, '$1-$2-$3'); // 080-xxxx-xxxx
+                }
+            } else if (value.startsWith('0467')) {
+                // 固定電話の場合（0467など）
+                if (value.length > 4 && value.length <= 8) {
+                    value = value.replace(/(\d{4})(\d+)/, '$1-$2'); // 0467-xxxx
+                } else if (value.length > 8) {
+                    value = value.replace(/(\d{4})(\d{4})(\d+)/, '$1-$2-$3'); // 0467-xxxx-xxxx
+                }
+            } else if (value.length > 2 && value.length <= 6) {
+                // その他の市外局番
+                value = value.replace(/(\d{2,4})(\d+)/, '$1-$2'); // 03-xxxx
+            } else if (value.length > 6) {
+                value = value.replace(/(\d{2,4})(\d{4})(\d+)/, '$1-$2-$3'); // 03-xxxx-xxxx
+            }
+
+            // フォーマットされた電話番号を入力フィールドに設定
+            input.value = value;
+        }
+    </script>
 {% endblock %}

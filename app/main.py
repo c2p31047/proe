@@ -113,11 +113,28 @@ def logout():
 @login_required
 def settings():
     if request.method == 'POST':
-        # 住所が新しく入力された場合
+        # 新しいユーザー情報を取得
+        new_username = request.form.get('username')  # ユーザー名
         new_address = request.form.get('address')  # 自宅の住所
-        new_work_address = request.form.get('work_address')  # 仕事の住所
+        new_work_address = request.form.get('work_address')  # 勤務先の住所
+        new_email = request.form.get('email')  # メールアドレス
+        new_phonenumber = request.form.get('phonenumber')  # 電話番号
+        new_password = request.form.get('password')  # 新しいパスワード
+        current_password = request.form.get('current_password')  # 現在のパスワード
 
-        # 最寄りの避難所を登録
+        # ユーザー名の更新
+        if new_username:
+            current_user.name = new_username
+
+        # 電話番号の更新
+        if new_phonenumber:
+            current_user.phonenumber = new_phonenumber
+
+        # メールアドレスの更新
+        if new_email:
+            current_user.email = new_email
+
+        # 住所の更新と最寄りの避難所の登録
         if new_address:
             shelters = Shelter.query.all()  # 全ての避難所を取得
             nearest_shelter_home = find_nearest_shelter(new_address, shelters)
@@ -125,8 +142,11 @@ def settings():
                 current_user.shelter_id = nearest_shelter_home.id
                 logging.debug(f"Home Shelter ID: {current_user.shelter_id}")
             else:
-                logging.debug("No nearest shelter found for home address.")
+                logging.debug("住所から近くの避難所が見つからない")
 
+            current_user.address = new_address  # 住所を更新
+
+        # 勤務先の住所の更新と最寄りの避難所の登録
         if new_work_address:
             shelters = Shelter.query.all()  # 全ての避難所を取得
             nearest_shelter_work = find_nearest_shelter(new_work_address, shelters)
@@ -134,19 +154,29 @@ def settings():
                 current_user.work_shelter_id = nearest_shelter_work.id
                 logging.debug(f"Work Shelter ID: {current_user.work_shelter_id}")
             else:
-                logging.debug("No nearest shelter found for work address.")
+                logging.debug("職場の近くから近くの避難所が見つからない")
+
+            current_user.work_address = new_work_address  # 勤務先の住所を更新
+
+        # 新しいパスワードの更新
+        if new_password:
+            if check_password_hash(current_user.password, current_password):  # 現在のパスワードが正しいか確認
+                current_user.password = generate_password_hash(new_password)  # パスワードをハッシュ化して保存
+            else:
+                flash('現在のパスワードが正しくありません。', 'danger')
 
         # データベースに変更を保存
         db.session.commit()
 
         # 更新されたユーザー情報を確認
         updated_user = User.query.get(current_user.id)
-        logging.debug(f"Updated User Shelter ID: {updated_user.shelter_id}")
+        logging.debug(f"Updated User: {updated_user.name}, Shelter ID: {updated_user.shelter_id}")
 
         flash('設定が更新されました', 'success')
         return redirect(url_for('main.index'))
 
     return render_template('settings.html')
+
 
 def admin_required(f):
     @wraps(f)
