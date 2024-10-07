@@ -5,17 +5,9 @@
 {% block content %}
     <h1>新規登録</h1>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flash-messages">
-                {% for category, message in messages %}
-                    <div class="flash-message {{ category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="flash-message {{ category }}">{{ message }}</div>
+    {% endfor %}
 
     <form method="post">
         {{ form.hidden_tag() }}

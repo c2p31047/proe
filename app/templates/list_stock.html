@@ -16,13 +16,9 @@
             <button type="submit" class="btn btn-primary">表示</button>
         </form>
 
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div class="alert alert-success">
-                    {{ messages[0] }}
-                </div>
-            {% endif %}
-        {% endwith %}
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
 
         <table>
             <thead>

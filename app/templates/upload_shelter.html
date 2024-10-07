@@ -4,6 +4,11 @@
 
 {% block content %}
     <h1>CSVファイルをアップロード</h1>
+
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="flash-message {{ category }}">{{ message }}</div>
+    {% endfor %}
+
     <p>※茅ヶ崎市オープンデータライブラリと同様の書式のみ使用できます。</p>
     <form action="{{ url_for('shelter.upload_shelter') }}" method="POST" enctype="multipart/form-data">
         <input type="file" name="file" accept=".csv" required>

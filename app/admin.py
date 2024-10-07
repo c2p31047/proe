@@ -51,25 +51,6 @@ def promote_user_by_email():
         flash('ユーザーが見つかりません.')
     return redirect(url_for('admin.add_admin'))
 
-# 避難所の編集のエンドポイント
-@admin_bp.route('/edit_admin_shelter/<int:id>', methods=['GET', 'POST'])
-@admin_required
-def edit_admin_shelter(id):
-    admin_shelter = AdminShelter.query.get_or_404(id)
-    if request.method == 'POST':
-        admin_shelter.admin_id = request.form['admin_id']
-        admin_shelter.shelter_id = request.form['shelter_id']
-        try:
-            db.session.commit()
-            flash('編集が成功しました', 'success')
-            return redirect(url_for('admin.admin_shelters'))
-        except:
-            db.session.rollback()
-            flash('編集に失敗しました', 'danger')
-    admins = Admin.query.all()
-    shelters = Shelter.query.all()
-    return render_template('edit_admin_shelter.html', admin_shelter=admin_shelter, admins=admins, shelters=shelters)
-
 # 管理者一覧を表示するエンドポイント
 @admin_bp.route('/admin/manage_admins')
 @admin_required
@@ -104,7 +85,7 @@ def delete_admin(admin_id):
 @admin_required
 def add_stock():
 
-    shelters = Shelter.query.all()
+    shelters = Shelter.query.filter((Shelter.other == None) | (Shelter.other == '')).all()
     categories = StockCategory.query.all()
 
     if request.method == 'POST':

@@ -25,6 +25,7 @@
                 <th>住所</th>
                 <th>緯度</th>
                 <th>経度</th>
+                <th>その他</th>
                 <th>操作</th>
             </tr>
         </thead>
@@ -36,6 +37,7 @@
                 <td>{{ shelter.address }}</td>
                 <td>{{ shelter.latitude }}</td>
                 <td>{{ shelter.longitude }}</td>
+                <td>{% if shelter.other is not none %}{{ shelter.other }}{% else %}{% endif %}</td>
                 <td>
                     <a href="{{ url_for('shelter.edit_shelter', shelter_id=shelter.id) }}">編集</a>
                     <a href="{{ url_for('shelter.delete_shelter', shelter_id=shelter.id) }}">削除</a>

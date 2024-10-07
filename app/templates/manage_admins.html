@@ -12,6 +12,10 @@
         </a>
     </div>
 
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="flash-message {{ category }}">{{ message }}</div>
+    {% endfor %}
+
     <input type="text" id="searchBox" placeholder="検索">
 
     <table id="adminTable">

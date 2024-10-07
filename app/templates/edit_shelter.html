@@ -5,6 +5,11 @@
 {% block content %}
 
     <h1>避難所編集</h1>
+
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="flash-message {{ category }}">{{ message }}</div>
+    {% endfor %}
+
     <form method="POST">
         <div class="form-group">
             <label for="name">避難所名</label>

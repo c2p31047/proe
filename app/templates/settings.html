@@ -5,6 +5,10 @@
 {% block content %}
     <h2>アカウント設定</h2>
 
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="flash-message {{ category }}">{{ message }}</div>
+    {% endfor %}
+
     <form method="post" action="{{ url_for('main.settings') }}">
         <!-- ユーザー名の変更 -->
         <div class="form-group">
