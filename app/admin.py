@@ -80,7 +80,6 @@ def delete_admin(admin_id):
         db.session.commit()
     return redirect(url_for('admin.manage_admins'))
 
-
 @admin_bp.route('/admin/list_category', methods=['GET'])
 def list_category():
     categories = StockCategory.query.all()
