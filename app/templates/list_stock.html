@@ -6,7 +6,7 @@
 {% block content %}
         <h1>備蓄の一覧</h1>
 
-        <form method="GET" action="{{ url_for('admin.stock_list') }}">
+        <form method="GET" action="{{ url_for('stock.stock_list') }}">
             <label for="shelter">避難所を選択:</label>
             <select name="shelter" id="shelter">
                 {% for shelter in shelters %}
@@ -49,8 +49,8 @@
                             <td>{{ stock.expiration }}</td>
                             <td>{{ stock.condition }}</td>
                             <td>
-                                <a href="{{ url_for('admin.edit_stock', id=stock.id) }}" class="btn btn-sm btn-warning">編集</a>
-                                <a href="{{ url_for('admin.delete_stock', id=stock.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('本当に削除しますか？');">削除</a>
+                                <a href="{{ url_for('stock.edit_stock', id=stock.id) }}" class="btn btn-sm btn-warning">編集</a>
+                                <a href="{{ url_for('stock.delete_stock', id=stock.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('本当に削除しますか？');">削除</a>
                             </td>
                         </tr>
                     {% endif %}
@@ -58,6 +58,6 @@
             </tbody>
         </table>
 
-        <a href="{{ url_for('admin.add_stock') }}" class="btn btn-primary">新しい在庫を追加</a>
+        <a href="{{ url_for('stock.add_stock') }}" class="btn btn-primary">新しい在庫を追加</a>
     </div>
 {% endblock %}

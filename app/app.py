@@ -2,7 +2,7 @@ from flask import Flask
 from main import main as main_bp
 from admin import admin_bp
 from shelter import shelter_bp
-from stock import stock_bp
+from stock import   stock_bp
 
 app = Flask(__name__)
 

@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', function() {
         placeholder: '場所を検索する',
         text: '検索',
     });
-
     map.addControl(osmGeocoder);
 
     // レイヤーのコントロールを作成
@@ -48,15 +47,4 @@ document.addEventListener('DOMContentLoaded', function() {
         '緊急指定避難所': L.layerGroup(markersWithoutOther).addTo(map),
         '広域避難場所': L.layerGroup(markersWithOther).addTo(map),
     }).addTo(map);
-
-    // 検索ボタンのクリックイベントを追加
-    document.getElementById('searchButton').addEventListener('click', function() {
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            const query = searchInput.value;
-            osmGeocoder._geocode(query); // geocodeメソッドの代わりに直接_geocodeを使用
-        } else {
-            console.error('Search input element not found');
-        }
-    });
 });

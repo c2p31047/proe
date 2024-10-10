@@ -10,8 +10,16 @@ migrate = Migrate()
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'your_secret_key'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
     app.config['UPLOAD_FOLDER'] = 'uploads'
+    
+    #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://{user}:{password}@{host}/{db_name}?charset=utf8'.format(**{
+      'user': 'root',
+      'password': '',
+      'host': 'localhost',
+      'db_name': 'app'
+    })
+
 
 
     db.init_app(app)
@@ -27,6 +35,9 @@ def create_app():
 
     from .shelter import shelter_bp
     app.register_blueprint(shelter_bp)
+    
+    from .stock import stock_bp
+    app.register_blueprint(stock_bp)
 
     @login_manager.user_loader
     def load_user(user_id):

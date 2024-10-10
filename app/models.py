@@ -91,9 +91,13 @@ class StockActivity(db.Model):
     shelter_id = db.Column(db.Integer, db.ForeignKey('shelter.id'), nullable=False)
     stock_id = db.Column(db.Integer, db.ForeignKey('stock.id'), nullable=False)
     type = db.Column(db.String(255), nullable=True)
-    date = db.Column(db.Date, nullable=False)
+    date = db.Column(db.DateTime, nullable=False)
     content = db.Column(db.Text, nullable=True)
     other = db.Column(db.Text, nullable=True)
+
+    admin = db.relationship('Admin', backref='activities')
+    shelter = db.relationship('Shelter', backref='activities')
+    stock = db.relationship('Stock', backref='activities')
 
 class StockCategory(db.Model):
     __tablename__ = 'stock_category'

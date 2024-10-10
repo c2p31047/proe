@@ -1,27 +1,64 @@
 {% extends 'base.html' %}
 
-{% block title %}備蓄の編集{% endblock %}
+{% block title %}在庫の編集{% endblock %}
 
 {% block content %}
-    <h1>備蓄の編集</h1>
+    <h1>在庫の編集</h1>
 
     {% for category, message in get_flashed_messages(with_categories=true) %}
         <div class="flash-message {{ category }}">{{ message }}</div>
     {% endfor %}
 
-    <form action="{{ url_for('admin.edit_stock', id = stock.id) }}" method="POST">
+    <form action="{{ url_for('stock.edit_stock', id=stock.id) }}" method="POST">
+
+        <!-- 避難所の選択 -->
         <div>
             <label for="shelter_id">避難所:</label>
-            <select name="shelter_id">
+            <select name="shelter_id" required>
                 {% for shelter in shelters %}
-                    <option value="{{ shelter.id }}">{{ shelter.name }}</option>
+                    <option value="{{ shelter.id }}" {% if shelter.id == stock.shelter_id %}selected{% endif %}>
+                        {{ shelter.name }}
+                    </option>
                 {% endfor %}
             </select>
         </div>
+
         <div>
-            <label for="stock_amount">備蓄量:</label>
-            <input type="number" name="stock_amount" required>
+            <label for="stockname">備蓄名:</label>
+            <input type="text" name="stockname" value="{{ stock.stockname }}">
         </div>
-        <button type="submit">備蓄情報を更新</button>
+
+
+        <div>
+            <label for="quantity">数量:</label>
+            <input type="number" name="quantity" value="{{ stock.quantity }}">
+        </div>
+
+        <div>
+            <label for="unit">単位:</label>
+            <input type="text" name="unit" value="{{ stock.unit }}">
+        </div>
+
+        <div>
+            <label for="location">場所:</label>
+            <input type="text" name="location" value="{{ stock.location }}">
+        </div>
+
+        <div>
+            <label for="note">メモ:</label>
+            <textarea name="note">{{ stock.note }}</textarea>
+        </div>
+
+        <div>
+            <label for="expiration">賞味期限:</label>
+            <input type="date" name="expiration" value="{{ stock.expiration.strftime('%Y-%m-%d') }}">
+        </div>
+
+        <div>
+            <label for="condition">状態:</label>
+            <input type="text" name="condition" value="{{ stock.condition }}">
+        </div>
+
+        <button type="submit">在庫情報を更新</button>
     </form>
 {% endblock %}

@@ -10,7 +10,7 @@
             <div class="flash-message {{ category }}">{{ message }}</div>
         {% endfor %}
 
-        <form action="{{ url_for('admin.add_stock') }}" method="POST">
+        <form action="{{ url_for('stock.add_stock') }}" method="POST">
             <div class="form-group">
                 <label for="shelter_id">避難所</label>
                 <select name="shelter_id" id="shelter_id" class="form-control">

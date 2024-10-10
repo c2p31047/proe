@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}備蓄の使用・編集の履歴{% endblock %}
+
+{% block content %}
+    <div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+        <h1 style="text-align: center;">備蓄の使用・編集の履歴</h1>
+        <form method="POST" action="{{ url_for('stock.activity_stock') }}" style="margin-bottom: 20px;">
+            <label for="shelter_id">避難所を選択してください:</label>
+            <select name="shelter_id" id="shelter_id" required style="width: 100%; padding: 10px; margin-top: 5px;">
+                {% for shelter in shelters %}
+                    <option value="{{ shelter.id }}"
+                            {% if shelter.id == selected_shelter_id %} selected {% endif %}>
+                        {{ shelter.name }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="submit" style="margin-top: 10px; padding: 10px 15px; background-color: #007bff; color: white; border: none; cursor: pointer;">
+                履歴の表示
+            </button>
+        </form>
+
+        {% if activities %}
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                <thead>
+                    <tr style="background-color: #f2f2f2;">
+                        <th style="border: 1px solid #dddddd; padding: 8px; text-align: left;">ID</th>
+                        <th style="border: 1px solid #dddddd; padding: 8px; text-align: left;">管理者名</th>
+                        <th style="border: 1px solid #dddddd; padding: 8px; text-align: left;">避難所名</th>
+                        <th style="border: 1px solid #dddddd; padding: 8px; text-align: left;">在庫名</th>
+                        <th style="border: 1px solid #dddddd; padding: 8px; text-align: left;">活動の種類</th>
+                        <th style="border: 1px solid #dddddd; padding: 8px; text-align: left;">日付</th>
+                        <th style="border: 1px solid #dddddd; padding: 8px; text-align: left;">内容</th>
+                        <th style="border: 1px solid #dddddd; padding: 8px; text-align: left;">その他の情報</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for activity in activities %}
+                        <tr>
+                            <td style="border: 1px solid #dddddd; padding: 8px;">{{ activity.id }}</td>
+                            <td style="border: 1px solid #dddddd; padding: 8px;">{{ activity.admin.name if activity.admin else '不明' }}</td>
+                            <td style="border: 1px solid #dddddd; padding: 8px;">{{ activity.shelter.name }}</td>
+                            <td style="border: 1px solid #dddddd; padding: 8px;">{{ activity.stock.stockname }}</td>
+                            <td style="border: 1px solid #dddddd; padding: 8px;">{{ activity.type }}</td>
+                            <td style="border: 1px solid #dddddd; padding: 8px;">{{ activity.date }}</td>
+                            <td style="border: 1px solid #dddddd; padding: 8px;">{{ activity.content }}</td>
+                            <td style="border: 1px solid #dddddd; padding: 8px;">{{ activity.other if activity.other else '' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="margin-top: 20px;">履歴が見つかりませんでした。</p>
+        {% endif %}
+
+        <a href="{{ url_for('stock.stock_list') }}" style="display: inline-block; margin-top: 20px; padding: 10px 15px; background-color: #007bff; color: white; border: none; text-decoration: none; cursor: pointer;">
+            備蓄一覧に戻る
+        </a>
+    </div>
+{% endblock %}
